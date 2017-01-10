@@ -1,7 +1,7 @@
 Summary:	C++ library for collecting user-defined in-process run-time statistics
 Name:		handystats
 Version:	1.11.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 
 License:	GPLv3
 URL:		https://github.com/yandex/handystats
@@ -24,7 +24,7 @@ run-time statistics with low overhead.
 
 %package devel
 Summary:	Development package for %{name}
-Requires:	%{name}-libs%{_isa} = %{version}-%{release}
+Requires:	%{name}%{_isa} = %{version}-%{release}
 
 %description devel
 Handystats is a C++ library for collecting user-defined in-process 
@@ -72,5 +72,8 @@ echo "%{_libdir}/%{name}" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_a
 
 
 %changelog
+* Tue Jan 10 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-2
+- fix requires
+
 * Tue Jan 10 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-1
 - initial build
