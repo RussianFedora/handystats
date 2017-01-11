@@ -14,9 +14,11 @@ Patch2:		handystats-1.13.3-license-fix0.patch
 Patch3:		handystats-1.13.3-license-fix1.patch
 
 BuildRequires:	cmake
-
 BuildRequires:	boost-devel
 BuildRequires:	gtest-devel
+
+# But why? Because Shindo uses asm injections
+ExclusiveArch:	x86_64
 
 %description
 Handystats is a C++ library for collecting user-defined in-process
