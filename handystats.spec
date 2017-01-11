@@ -1,7 +1,7 @@
 Summary:	C++ library for collecting user-defined in-process run-time statistics
 Name:		handystats
 Version:	1.11.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 
 License:	GPLv3
 URL:		https://github.com/yandex/handystats
@@ -49,13 +49,6 @@ run-time statistics with low overhead.
 %install
 %{make_install}
 
-mkdir %{buildroot}%{_libdir}/%{name}
-mv %{buildroot}%{_libdir}/lib%{name}.so %{buildroot}%{_libdir}/%{name}
-
-mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/ 
-echo "%{_libdir}/%{name}" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
-
-
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
@@ -64,8 +57,7 @@ echo "%{_libdir}/%{name}" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_a
 %files
 %license LICENSE
 %doc README.md AUTHORS
-%config(noreplace) %{_sysconfdir}/ld.so.conf.d/*.conf
-%{_libdir}/%{name}/lib%{name}.so
+%{_libdir}/lib%{name}.so
 
 
 %files devel
@@ -74,6 +66,9 @@ echo "%{_libdir}/%{name}" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_a
 
 
 %changelog
+* Wed Jan 11 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-3
+- use standart path and names for library
+
 * Tue Jan 10 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-2
 - fix requires
 
