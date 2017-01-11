@@ -1,0 +1,193 @@
+From 2a407fd36a4ea274823bfe4ea11ada0f263e6166 Mon Sep 17 00:00:00 2001
+From: Vitaly Isaev <vitalyisaev2@gmail.com>
+Date: Thu, 2 Jun 2016 00:04:01 +0300
+Subject: [PATCH] Debianization refactored (#3)
+
+* Debianization refactored
+
+* Soversion fix
+---
+ CMakeLists.txt                           | 12 ++++++++----
+ debian/control                           | 29 ++++++++++++++++++++++-------
+ debian/copyright                         | 18 ++++++++++++++++++
+ debian/handystats.install                |  2 ++
+ debian/rules                             | 16 +++++++++++++---
+ include/handystats/rapidjson/license.txt | 19 -------------------
+ 6 files changed, 63 insertions(+), 33 deletions(-)
+ create mode 100644 debian/handystats.install
+ delete mode 100644 include/handystats/rapidjson/license.txt
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9f40a2d..909dd43 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,11 @@
+ PROJECT (handystats)
+ CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
+ 
++SET (LIB_MAJOR_VERSION "1")
++SET (LIB_MINOR_VERSION "11")
++SET (LIB_PATCH_VERSION "3")
++SET (LIB_SOVERSION "1")
++
+ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -std=c++0x -Wreorder -Wreturn-type -Wunused-variable -pedantic -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_CLOCK_MONOTONIC -D_GLIBCXX_USE_SCHED_YIELD")
+ 
+ SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g -std=c99 -Wreturn-type -Wunused-variable -pedantic -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_CLOCK_MONOTONIC -D_POSIX_C_SOURCE=200809L")
+@@ -12,22 +17,21 @@ IF (LIB64)
+ 	SET (LIBSUFFIX 64)
+ ELSE ()
+ 	SET (LIBSUFFIX "")
+-ENDIF()
++ENDIF ()
+ 
+ SET (LIBDIR lib${LIBSUFFIX})
+ 
+ 
+ INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+ 
+-
+ SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIBDIR})
+ 
+-
+ FILE (GLOB_RECURSE handy_src RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/*.cpp")
+ ADD_LIBRARY (${PROJECT_NAME} SHARED ${handy_src})
+ 
+-TARGET_LINK_LIBRARIES (${PROJECT_NAME} rt)
++TARGET_LINK_LIBRARIES (${PROJECT_NAME} rt pthread)
+ 
++SET_TARGET_PROPERTIES (${PROJECT_NAME} PROPERTIES SOVERSION ${LIB_SOVERSION} VERSION ${LIB_MAJOR_VERSION}.${LIB_MINOR_VERSION})
+ 
+ INSTALL (TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/${LIBDIR})
+ INSTALL (DIRECTORY ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+diff --git a/debian/control b/debian/control
+index f274bd4..f248f73 100644
+--- a/debian/control
++++ b/debian/control
+@@ -1,18 +1,33 @@
+ Source: handystats
+-Section: libdevel
+ Priority: optional
++Section: libs
+ Maintainer: Danil Osherov <shindo@yandex-team.ru>
+ Build-Depends: debhelper (>= 7),
+-		cdbs,
+ 		cmake,
+ 		libboost-dev,
+ 		libgtest-dev,
+-Standards-Version: 3.8.0
+-Homepage: https://github.com/shindo/handystats
+-Vcs-git: git://github.com/shindo/handystats.git
+-Vcs-Browser: https://github.com/shindo/handystats
++Standards-Version: 3.9.5
++Homepage: https://github.com/yandex/handystats
++Vcs-git: git://github.com/yandex/handystats.git
++Vcs-Browser: https://github.com/yandex/handystats
+ 
+ Package: handystats
+ Architecture: any
++Section: libdevel
+ Depends: ${shlibs:Depends}, ${misc:Depends}
+-Description: C++ library for collecting user-defined in-process runtime statistics with low overhead
++Description: C++ library for user-defined in-process runtime statistics 
++ Handystats is C++ library for collecting user-defined
++ in-process runtime statistics with low overhead that allows
++ users to monitor their applications in a production
++ environment.
++
++Package: handystats-dbg
++Architecture: any
++Priority: extra
++Section: debug
++Depends: ${misc:Depends}, handystats (= ${binary:Version})
++Description: C++ library for user-defined in-process runtime statistics debug files
++ Handystats is C++ library for collecting user-defined
++ in-process runtime statistics with low overhead that allows
++ users to monitor their applications in a production
++ environment.
+diff --git a/debian/copyright b/debian/copyright
+index e1d5491..93c2a36 100644
+--- a/debian/copyright
++++ b/debian/copyright
+@@ -3,7 +3,25 @@ Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+ Files: *
+ Copyright: 2013-2015 YANDEX LLC
+ License: LGPL-3+
++Source: /usr/share/common-licenses/LGPL-3
+ 
+ Files: include/handystats/rapidjson/*
+ Copyright: 2011 Milo Yip
+ License: MIT
++ Permission is hereby granted, free of charge, to any person obtaining a copy
++ of this software and associated documentation files (the "Software"), to deal
++ in the Software without restriction, including without limitation the rights
++ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++ copies of the Software, and to permit persons to whom the Software is
++ furnished to do so, subject to the following conditions:
++ .
++ The above copyright notice and this permission notice shall be included in
++ all copies or substantial portions of the Software.
++ .
++ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++ THE SOFTWARE.
+diff --git a/debian/handystats.install b/debian/handystats.install
+new file mode 100644
+index 0000000..4418816
+--- /dev/null
++++ b/debian/handystats.install
+@@ -0,0 +1,2 @@
++usr/lib
++usr/include
+diff --git a/debian/rules b/debian/rules
+index 75b9897..24d15ea 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -1,6 +1,16 @@
+ #!/usr/bin/make -f
+ 
+-include /usr/share/cdbs/1/class/cmake.mk
+-include /usr/share/cdbs/1/rules/debhelper.mk
++%:
++	dh $@
+ 
+-DEB_MAKE_CHECK_TARGET=check
++override_dh_auto_configure:
++	cmake -DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_INSTALL_PREFIX:PATH=/usr
++
++override_dh_auto_build:
++	make -j4
++
++override_dh_auto_test:
++	make check
++
++override_dh_strip:
++	dh_strip --dbg-package=handystats-dbg
+diff --git a/include/handystats/rapidjson/license.txt b/include/handystats/rapidjson/license.txt
+deleted file mode 100644
+index 93e23cb..0000000
+--- a/include/handystats/rapidjson/license.txt
++++ /dev/null
+@@ -1,19 +0,0 @@
+-Copyright (C) 2011 Milo Yip
+-
+-Permission is hereby granted, free of charge, to any person obtaining a copy
+-of this software and associated documentation files (the "Software"), to deal
+-in the Software without restriction, including without limitation the rights
+-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-copies of the Software, and to permit persons to whom the Software is
+-furnished to do so, subject to the following conditions:
+-
+-The above copyright notice and this permission notice shall be included in
+-all copies or substantial portions of the Software.
+-
+-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+-THE SOFTWARE.

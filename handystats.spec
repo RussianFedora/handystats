@@ -1,7 +1,7 @@
 Summary:	C++ library for collecting user-defined in-process run-time statistics
 Name:		handystats
 Version:	1.11.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 
 License:	GPLv3
 URL:		https://github.com/yandex/handystats
@@ -12,6 +12,7 @@ Patch0:		handystats-1.13.3-gcc5.patch
 Patch1:		handystats-1.13.3-license.patch
 Patch2:		handystats-1.13.3-license-fix0.patch
 Patch3:		handystats-1.13.3-license-fix1.patch
+Patch4:		handystats-1.13.3-debianisazation-refactoring.patch
 
 BuildRequires:	cmake
 BuildRequires:	boost-devel
@@ -57,15 +58,19 @@ run-time statistics with low overhead.
 %files
 %license LICENSE
 %doc README.md AUTHORS
-%{_libdir}/lib%{name}.so
+%{_libdir}/lib%{name}.so.*
 
 
 %files devel
 %doc README.md
 %{_includedir}/%{name}
+%{_libdir}/lib%{name}.so
 
 
 %changelog
+* Wed Jan 11 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-4
+- refactoring debianization
+
 * Wed Jan 11 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-3
 - use standart path and names for library
 
