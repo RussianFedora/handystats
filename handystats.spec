@@ -13,13 +13,11 @@ Patch1:		handystats-1.13.3-license.patch
 Patch2:		handystats-1.13.3-license-fix0.patch
 Patch3:		handystats-1.13.3-license-fix1.patch
 Patch4:		handystats-1.13.3-debianisazation-refactoring.patch
+Patch5:		handystats-1.13.3-multiarch-buildfix.patch
 
 BuildRequires:	cmake
 BuildRequires:	boost-devel
 BuildRequires:	gtest-devel
-
-# But why? Because Shindo uses asm injections
-ExclusiveArch:	x86_64
 
 %description
 Handystats is a C++ library for collecting user-defined in-process
@@ -68,6 +66,9 @@ run-time statistics with low overhead.
 
 
 %changelog
+* Tue Jan 24 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-5
+- fix build with non x86_64 arches
+
 * Wed Jan 11 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-4
 - refactoring debianization
 

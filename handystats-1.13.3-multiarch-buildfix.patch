@@ -1,0 +1,44 @@
+diff --git a/src/chrono/tsc_clock.cpp b/src/chrono/tsc_clock.cpp
+index 4c0eea4..12eb1d0 100644
+--- a/src/chrono/tsc_clock.cpp
++++ b/src/chrono/tsc_clock.cpp
+@@ -30,6 +30,7 @@
+ namespace handystats { namespace chrono {
+ 
+ inline uint64_t rdtsc() {
++#if __x86_64__
+ 	uint64_t tsc;
+ 	asm volatile (
+ 			"mfence; rdtsc; "
+@@ -39,9 +40,17 @@ inline uint64_t rdtsc() {
+ 			:
+ 			: "%rcx", "%rdx");
+ 	return tsc;
++#else
++	uint32_t low_value, high_value;
++	asm volatile (
++			"mfence; rdtsc "
++			: "=a"(low_value), "=d"(high_value));
++	return low_value;
++#endif
+ }
+ 
+ inline uint64_t rdtscp() {
++#if __x86_64__
+ 	uint64_t tsc;
+ 	asm volatile (
+ 			"rdtscp; "
+@@ -51,6 +60,13 @@ inline uint64_t rdtscp() {
+ 			:
+ 			: "%rcx", "%rdx");
+ 	return tsc;
++#else
++	uint32_t low_value, high_value;
++	asm volatile (
++			"rdtscp "
++			: "=a"(low_value), "=d"(high_value));
++	return low_value;
++#endif
+ }
+ 
+ long double cycles_per_nanosec;
