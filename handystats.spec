@@ -14,6 +14,7 @@ Patch2:		handystats-1.13.3-license-fix0.patch
 Patch3:		handystats-1.13.3-license-fix1.patch
 Patch4:		handystats-1.13.3-debianisazation-refactoring.patch
 Patch5:		handystats-1.13.3-multiarch-buildfix.patch
+Patch6:		handystats-1.13.3-installation-fix.patch
 
 BuildRequires:	cmake
 BuildRequires:	boost-devel
