@@ -1,3 +1,51 @@
+diff --git a/include/handystats/metrics/counter.hpp b/include/handystats/metrics/counter.hpp
+index d46df16..6f1da89 100644
+--- a/include/handystats/metrics/counter.hpp
++++ b/include/handystats/metrics/counter.hpp
+@@ -30,7 +30,11 @@ namespace handystats { namespace metrics {
+ 
+ struct counter
+ {
++#if __x86_64__
+ 	typedef int64_t value_type;
++#else
++	typedef int32_t value_type;
++#endif
+ 	typedef chrono::tsc_clock clock;
+ 	typedef chrono::time_point time_point;
+ 
+diff --git a/include/handystats/metrics/gauge.hpp b/include/handystats/metrics/gauge.hpp
+index a8fba10..44e0b00 100644
+--- a/include/handystats/metrics/gauge.hpp
++++ b/include/handystats/metrics/gauge.hpp
+@@ -28,7 +28,11 @@ namespace handystats { namespace metrics {
+ 
+ struct gauge
+ {
++#if __x86_64__
+ 	typedef double value_type;
++#else
++	typedef float value_type;
++#endif
+ 	typedef chrono::tsc_clock clock;
+ 	typedef chrono::time_point time_point;
+ 
+diff --git a/include/handystats/metrics/timer.hpp b/include/handystats/metrics/timer.hpp
+index d44c86c..e34c18f 100644
+--- a/include/handystats/metrics/timer.hpp
++++ b/include/handystats/metrics/timer.hpp
+@@ -38,7 +38,11 @@ struct timer
+ 	typedef chrono::tsc_clock clock;
+ 	typedef chrono::time_point time_point;
+ 
++#if __x86_64__
+ 	typedef uint64_t instance_id_type;
++#else
++	typedef uint32_t instance_id_type;
++#endif
+ 
+ 	static const instance_id_type DEFAULT_INSTANCE_ID;
+ 
 diff --git a/src/chrono/tsc_clock.cpp b/src/chrono/tsc_clock.cpp
 index 4c0eea4..12eb1d0 100644
 --- a/src/chrono/tsc_clock.cpp
@@ -42,3 +90,31 @@ index 4c0eea4..12eb1d0 100644
  }
  
  long double cycles_per_nanosec;
+diff --git a/src/events/timer.cpp b/src/events/timer.cpp
+index 7f1d5f0..1048e8f 100644
+--- a/src/events/timer.cpp
++++ b/src/events/timer.cpp
+@@ -159,7 +159,11 @@ event_message* create_set_event(
+ 
+ 	message->event_type = event_type::SET;
+ 	new (&message->event_data)
++#if __x86_64__
+ 		int64_t(
++#else
++		int32_t(
++#endif
+ 			chrono::duration::convert_to(
+ 				metrics::timer::value_unit,
+ 				measurement
+@@ -227,7 +231,11 @@ void process_heartbeat_event(metrics::timer& timer, const event_message& message
+ }
+ 
+ void process_set_event(metrics::timer& timer, const event_message& message) {
++#if __x86_64__
+ 	const auto& duration_rep = reinterpret_cast<const int64_t>(message.event_data);
++#else
++	const auto& duration_rep = reinterpret_cast<const int32_t>(message.event_data);
++#endif
+ 	timer.set(chrono::duration(duration_rep, metrics::timer::value_unit), message.timestamp);
+ }
+ 
