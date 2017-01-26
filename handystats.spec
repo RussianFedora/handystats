@@ -1,7 +1,7 @@
 Summary:	C++ library for collecting user-defined in-process run-time statistics
 Name:		handystats
 Version:	1.11.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 
 License:	GPLv3
 URL:		https://github.com/yandex/handystats
