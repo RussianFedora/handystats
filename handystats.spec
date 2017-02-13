@@ -67,6 +67,9 @@ run-time statistics with low overhead.
 
 
 %changelog
+* Mon Feb 13 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-6
+- rebuilt against new boost
+
 * Tue Jan 24 2017 Arkady L. Shane <ashejn@russianfedora.pro> - 1.11.3-5
 - fix build with non x86_64 arches
 
